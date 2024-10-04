@@ -1,0 +1,1 @@
+C:\FTP-Get\Scripts\activate.bat && python C:\FTP-Get\FtpGet.py

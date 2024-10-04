@@ -1,0 +1,15 @@
+# .gitignore
+bin/
+build/
+dist/
+lib/
+lib64/
+Scripts/
+var/
+
+known_hosts
+pyvenv.cfg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
