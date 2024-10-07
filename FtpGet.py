@@ -95,9 +95,9 @@ def move_files():
         print(f"Error {str(e)}")
 
 def main():
-    #download_files()
-    #strip_date()
-    #rename_files()
+    download_files()
+    strip_date()
+    rename_files()
     move_files()
     return
 
