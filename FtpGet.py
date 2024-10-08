@@ -4,8 +4,10 @@ import paramiko
 from datetime import datetime
 import logging
 
-logging.basicConfig(level=logging.DEBUG, filename="FtpGet.log", filemode="a",
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s - %(levelname)s - %(message)s",
+                    handlers=[logging.StreamHandler(),
+                    logging.FileHandler("FtpGet.log")])
 logging.info("FtpGet Started \n")
 
 #Get FTP Server Details from System Variables
@@ -100,11 +102,12 @@ def move_files():
         print(f"Error {str(e)}")
 
 def main():
-    download_files()
-    strip_date()
-    rename_files()
-    move_files()
+#    download_files()
+#    strip_date()
+#    rename_files()
+#    move_files()
     return
 
 if __name__ == "__main__":
     main()
+logging.info("FtpGet Complete \n\n")
