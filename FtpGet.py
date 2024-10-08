@@ -2,6 +2,11 @@ import os
 import shutil
 import paramiko
 from datetime import datetime
+import logging
+
+logging.basicConfig(level=logging.DEBUG, filename="FtpGet.log", filemode="a",
+                    format="%(asctime)s - %(levelname)s - %(message)s")
+logging.info("FtpGet Started \n")
 
 #Get FTP Server Details from System Variables
 sftp_username = os.getenv('FtpUserName')
