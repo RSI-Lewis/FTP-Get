@@ -18,12 +18,10 @@ sftp_server = os.getenv('FtpHost')
 remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
 if sftp_username == None or sftp_password == None or sftp_Server == None:
-    logging.error("""Required Environmental Variables not found, this 
-                                  script requires three environmental variables 
-                                  too work.\n
-                                   1) FtpUserName
-                                   2) FtpUserPass
-                                   3) FtpHost\n""")
+    logging.error("Required Environmental Variables not found, \n"+log_tab
+                +"this script requires three environmental\n"+log_tab+
+                "variables to work.\n"+log_tab+" 1) FtpUserName\n"+log_tab+
+                " 2) FtpUserPass\n"+log_tab+" 3) FtpHost\n")
     logging.warning("Terminating Script Early")
     exit()
 
@@ -41,11 +39,11 @@ except Exception as e:
 #Set the server folder to move the final files to
 server_folder = "\\\\server19\\db\\Paycom Reports\\Paycom Data"
 if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
-    logging.info(f"Connected to server folder {server_folder}")
+    logging.info(f"Connected to server folder:\n"+log_tab+server_folder)
 else:
-    logging.error(f"Cannot connect to server folder {server_folder} \n"
-                    +log_tab+" Please verify folder exists and this profile "
-                    +"has access")
+    logging.error("Cannot connect to server folder:\n "+log_tab+server_folder+
+                "\n"+log_tab+" Please verify folder exists and this profile\n"
+                +log_tab+" has access")
     exit()
 
 #Dictionary showing expected file name beginnings and what the file name 
