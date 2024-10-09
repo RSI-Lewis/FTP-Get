@@ -16,7 +16,16 @@ sftp_password = os.getenv('FtpUserPass')
 sftp_server = os.getenv('FtpHost')
 remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
- 
+if sftp_username == None or sftp_password == None or sftp_Server == None:
+    logging.error("""Required Environmental Variables not found, this 
+                                  script requires three environmental variables 
+                                  too work.\n
+                                   1) FtpUserName
+                                   2) FtpUserPass
+                                   3) FtpHost\n""")
+    logging.warning("Terminating Script Early")
+    exit()
+
 #Set the folder to save files to when downloaded from FTP
 local_folder = "c:\\FTP-Down"
 
@@ -102,10 +111,10 @@ def move_files():
         print(f"Error {str(e)}")
 
 def main():
-#    download_files()
-#    strip_date()
-#    rename_files()
-#    move_files()
+    download_files()
+    strip_date()
+    rename_files()
+    move_files()
     return
 
 if __name__ == "__main__":
