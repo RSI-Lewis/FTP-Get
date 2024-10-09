@@ -9,6 +9,7 @@ logging.basicConfig(level=logging.DEBUG,
                     handlers=[logging.StreamHandler(),
                     logging.FileHandler("FtpGet.log")])
 logging.info("FtpGet Started \n")
+log_tab ="                                 "
 
 #Get FTP Server Details from System Variables
 sftp_username = os.getenv('FtpUserName')
@@ -39,6 +40,13 @@ except Exception as e:
 
 #Set the server folder to move the final files to
 server_folder = "\\\\server19\\db\\Paycom Reports\\Paycom Data"
+if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
+    logging.info(f"Connected to server folder {server_folder}")
+else:
+    logging.error(f"Cannot connect to server folder {server_folder} \n"
+                    +log_tab+" Please verify folder exists and this profile "
+                    +"has access")
+    exit()
 
 #Dictionary showing expected file name beginnings and what the file name 
 #should be change to before moving it to paycom data
