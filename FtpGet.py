@@ -28,6 +28,14 @@ if sftp_username == None or sftp_password == None or sftp_Server == None:
 
 #Set the folder to save files to when downloaded from FTP
 local_folder = "c:\\FTP-Down"
+try:
+    if not os.path.exists(local_folder):
+        os.makedirs(local_folder)
+        logging.info(f"Created target folder {local_folder}")
+    else:
+        logging.info(f"Setting target folder to {local_folder}")
+except Exception as e:
+    logging.error(f"Error: {str(e)}")
 
 #Set the server folder to move the final files to
 server_folder = "\\\\server19\\db\\Paycom Reports\\Paycom Data"
