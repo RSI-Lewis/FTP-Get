@@ -9,6 +9,8 @@ logging.basicConfig(level=logging.DEBUG,
                     handlers=[logging.StreamHandler(),
                     logging.FileHandler("FtpGet.log")])
 logging.info("FtpGet Started \n")
+
+#This string of spaces is for formatting log reports nicely
 log_tab ="                                 "
 
 #Get FTP Server Details from System Variables
@@ -17,7 +19,7 @@ sftp_password = os.getenv('FtpUserPass')
 sftp_server = os.getenv('FtpHost')
 remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
-if sftp_username == None or sftp_password == None or sftp_Server == None:
+if sftp_username == None or sftp_password == None or sftp_server == None:
     logging.error("Required Environmental Variables not found, \n"+log_tab
                 +"this script requires three environmental\n"+log_tab+
                 "variables to work.\n"+log_tab+" 1) FtpUserName\n"+log_tab+
@@ -64,8 +66,7 @@ def download_files():
         transport.connect(username=sftp_username, password=sftp_password)
         #Create the FTP session
         sftp = paramiko.SFTPClient.from_transport(transport)
-        print("Opening SFTP Connection...")
-
+        logging.info(f"Opened SFTP Connection: {sftp_server}")
         sftp.chdir(remote_folder)
         for filename in sftp.listdir():
             if filename.startswith(today_date):
@@ -73,6 +74,7 @@ def download_files():
 
                 sftp.get(filename, local_file_path)
                 print(f'Downloaded: {filename}')
+            
         print('Closing SFTP Connection')
         sftp.close()
         transport.close()
@@ -126,9 +128,10 @@ def move_files():
 
 def main():
     download_files()
-    strip_date()
-    rename_files()
-    move_files()
+
+#    strip_date()
+#    rename_files()
+#    move_files()
     return
 
 if __name__ == "__main__":
