@@ -4,6 +4,7 @@ import paramiko
 from datetime import datetime
 import logging
 
+#configuration of logging streams
 ftpget_logger = logging.getLogger('internal_logger')
 ftpget_logger.setLevel(logging.DEBUG)
 
@@ -53,18 +54,18 @@ local_folder = "c:\\FTP-Down"
 try:
     if not os.path.exists(local_folder):
         os.makedirs(local_folder)
-        logging.info(f"Created target folder {local_folder}")
+        ftpget_logger.info(f"Created target folder {local_folder}")
     else:
-        logging.info(f"Setting target folder to {local_folder}")
+        ftpget_logger.info(f"Setting target folder to {local_folder}")
 except Exception as e:
-    logging.error(f"Error: {str(e)}")
+    ftpget_logger.error(f"Error: {str(e)}")
 
 #Set the server folder to move the final files to
 server_folder = "\\\\server19\\db\\Paycom Reports\\Paycom Data"
 if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
-    logging.info(f"Connected to server folder:\n"+log_tab+server_folder)
+    ftpget_logger.info(f"Connected to server folder:\n"+log_tab+server_folder)
 else:
-    logging.error("Cannot connect to server folder:\n "+log_tab+server_folder+
+    ftpget_logger.error("Cannot connect to server folder:\n "+log_tab+server_folder+
                 "\n"+log_tab+" Please verify folder exists and this profile\n"
                 +log_tab+" has access")
     exit()
@@ -87,21 +88,21 @@ def download_files():
         transport.connect(username=sftp_username, password=sftp_password)
         #Create the FTP session
         sftp = paramiko.SFTPClient.from_transport(transport)
-        logging.info(f"Opened SFTP Connection: {sftp_server}")
+        ftpget_logger.info(f"Opened SFTP Connection: {sftp_server}")
         sftp.chdir(remote_folder)
         for filename in sftp.listdir():
             if filename.startswith(today_date):
                 local_file_path = os.path.join(local_folder, filename)
 
                 sftp.get(filename, local_file_path)
-                print(f'Downloaded: {filename}')
+                ftpget_logger.info(f'Downloaded: {filename}')
             
-        print('Closing SFTP Connection')
+        ftpget_logger.info('Closing SFTP Connection')
         sftp.close()
         transport.close()
 
     except Exception as e:
-        print(f'An error occurred: {e}')
+        ftpget_logger.error(f'An error occurred: {e}')
 
 def strip_date():
     try:
@@ -112,11 +113,11 @@ def strip_date():
                 old_filepath = os.path.join(local_folder, filename)
                 new_filepath = os.path.join(local_folder, new_filename)
                 os.rename(old_filepath, new_filepath)
-                print(f"Renamed {filename} to {new_filename}")
-        print("Date info stripped from all filenames")
+                ftpget_logger.info(f"Renamed {filename} to {new_filename}")
+        ftpget_logger.info("Date info stripped from all filenames")
 
     except Exception as e:
-        print(f'An error occurred: {e}')
+        ftpget_logger.error(f'An error occurred: {e}')
         
 def rename_files():
     try:
@@ -130,11 +131,11 @@ def rename_files():
             old_filepath = os.path.join(local_folder, filename)
             new_filepath = os.path.join(local_folder, new_filename)
             os.rename(old_filepath, new_filepath)
-            print(f"Renamed {filename} to {new_filename}")
-        print('Rename Function Complete')
+            ftpget_logger.info(f"Renamed {filename} to {new_filename}")
+        ftpget_logger.info('Rename Function Complete')
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        ftpget_logger.error(f"Error: {str(e)}")
 
 def move_files():
     try:
@@ -142,19 +143,18 @@ def move_files():
             local_name = os.path.join(local_folder, filename)
             remote_name = os.path.join(server_folder, filename)
             shutil.move(local_name, remote_name)
-            print(f"Moved {filename} to {server_folder}")
+            ftpget_logger.info(f"Moved {filename} to {server_folder}")
 
     except Exception as e:
-        print(f"Error {str(e)}")
+        ftpget_logger.error(f"Error {str(e)}")
 
 def main():
     download_files()
-
-#    strip_date()
-#    rename_files()
-#    move_files()
+    strip_date()
+    rename_files()
+    move_files()
     return
 
 if __name__ == "__main__":
     main()
-logging.info("FtpGet Complete \n\n")
+ftpget_logger.info("FtpGet Complete \n\n")
