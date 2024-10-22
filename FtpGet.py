@@ -4,11 +4,32 @@ import paramiko
 from datetime import datetime
 import logging
 
-logging.basicConfig(level=logging.DEBUG,
-                    format="%(asctime)s - %(levelname)s - %(message)s",
-                    handlers=[logging.StreamHandler(),
-                    logging.FileHandler("FtpGet.log")])
-logging.info("FtpGet Started \n")
+ftpget_logger = logging.getLogger('internal_logger')
+ftpget_logger.setLevel(logging.DEBUG)
+
+stream_handler = logging.StreamHandler()
+file_hanlder = logging.FileHandler('FtpGet.log')
+
+ftpget_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+stream_handler.setFormatter(ftpget_formatter)
+file_hanlder.setFormatter(ftpget_formatter)
+
+ftpget_logger.addHandler(stream_handler)
+ftpget_logger.addHandler(file_hanlder)
+
+external_logger = logging.getLogger('external_module_logger')
+external_logger.setLevel(logging.ERROR)
+external_handler = logging.FileHandler('modules.log')
+
+external_handler.setFormatter(ftpget_formatter)
+external_logger.addHandler(external_handler)
+paramiko.logger = external_logger
+
+#logging.basicConfig(level=logging.DEBUG,
+#                    format="%(asctime)s - %(levelname)s - %(message)s",
+#                    handlers=[logging.StreamHandler(),
+#                    logging.FileHandler("FtpGet.log")])
+ftpget_logger.info("FtpGet Started \n")
 
 #This string of spaces is for formatting log reports nicely
 log_tab ="                                 "
@@ -20,11 +41,11 @@ sftp_server = os.getenv('FtpHost')
 remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
 if sftp_username == None or sftp_password == None or sftp_server == None:
-    logging.error("Required Environmental Variables not found, \n"+log_tab
+    ftpget_logger.error("Required Environmental Variables not found, \n"+log_tab
                 +"this script requires three environmental\n"+log_tab+
                 "variables to work.\n"+log_tab+" 1) FtpUserName\n"+log_tab+
                 " 2) FtpUserPass\n"+log_tab+" 3) FtpHost\n")
-    logging.warning("Terminating Script Early")
+    ftpget_logger.warning("Terminating Script Early")
     exit()
 
 #Set the folder to save files to when downloaded from FTP
