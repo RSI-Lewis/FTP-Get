@@ -26,6 +26,7 @@ external_handler.setFormatter(ftpget_formatter)
 external_logger.addHandler(external_handler)
 paramiko.logger = external_logger
 
+# Old Logger - Remove once new Logger is fully functional
 #logging.basicConfig(level=logging.DEBUG,
 #                    format="%(asctime)s - %(levelname)s - %(message)s",
 #                    handlers=[logging.StreamHandler(),
@@ -61,7 +62,7 @@ except Exception as e:
     ftpget_logger.error(f"Error: {str(e)}")
 
 #Set the server folder to move the final files to
-server_folder = "\\\\server19\\db\\Paycom Reports\\Paycom Data"
+server_folder = "\\\\server19\\db\\Paycom Reports\\Test-Paycom Data"
 if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
     ftpget_logger.info(f"Connected to server folder:\n"+log_tab+server_folder)
 else:
