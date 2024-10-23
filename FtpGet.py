@@ -154,8 +154,8 @@ def main():
     strip_date()
     rename_files()
     move_files()
+    ftpget_logger.info("FtpGet Complete \n\n")
     return
 
 if __name__ == "__main__":
     main()
-ftpget_logger.info("FtpGet Complete \n\n")
