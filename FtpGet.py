@@ -35,12 +35,14 @@ paramiko.logger = external_logger
 ftpget_logger.info("FtpGet Started \n")
 
 #initiate SlackBot connection
-client = WebClient(token=os.getenv('slack_auth'))
-if token == None:
+slack_token=os.getenv('slack_auth')
+if slack_token == None:
     ftpget_logger.warning("***************************\n"+log_tab+
                         " Slack Auth Token Missing\n"+log_tab+
                         "Proceeding without Slackbot\n"+log_tab+
                         "***************************\n")
+else:
+    client = WebClient(token=slack_token)
 
 #This string of spaces is for formatting log reports nicely
 log_tab ="                                 "
@@ -57,6 +59,10 @@ if sftp_username == None or sftp_password == None or sftp_server == None:
                 "variables to work.\n"+log_tab+" 1) FtpUserName\n"+log_tab+
                 " 2) FtpUserPass\n"+log_tab+" 3) FtpHost\n")
     ftpget_logger.warning("Terminating Script Early")
+    client.chat_postMessage(channel="paycom-automation",
+                        text="Automation failed to initialize. "+
+                        "SFTP Credentials missing from Environment",
+                        username="Bot User")
     exit()
 
 #Set the folder to save files to when downloaded from FTP
