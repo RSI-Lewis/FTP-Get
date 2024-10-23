@@ -84,6 +84,10 @@ else:
     ftpget_logger.error("Cannot connect to server folder:\n "+log_tab+server_folder+
                 "\n"+log_tab+" Please verify folder exists and this profile\n"
                 +log_tab+" has access")
+    client.chat_postMessage(channel="paycom-automation",
+                        text="Automation failed to initialize. "+
+                        "Cannot access Server Folder",
+                        username="Bot User")
     exit()
 
 #Dictionary showing expected file name beginnings and what the file name 
