@@ -3,6 +3,7 @@ import shutil
 import paramiko
 from datetime import datetime
 import logging
+from slack_sdk import WebClient
 
 #configuration of logging streams
 ftpget_logger = logging.getLogger('internal_logger')
@@ -32,6 +33,14 @@ paramiko.logger = external_logger
 #                    handlers=[logging.StreamHandler(),
 #                    logging.FileHandler("FtpGet.log")])
 ftpget_logger.info("FtpGet Started \n")
+
+#initiate SlackBot connection
+client = WebClient(token=os.getenv('slack_auth'))
+if token == None:
+    ftpget_logger.warning("***************************\n"+log_tab+
+                        " Slack Auth Token Missing\n"+log_tab+
+                        "Proceeding without Slackbot\n"+log_tab+
+                        "***************************\n")
 
 #This string of spaces is for formatting log reports nicely
 log_tab ="                                 "
