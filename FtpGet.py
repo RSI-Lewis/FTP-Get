@@ -192,6 +192,12 @@ def move_files():
 
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
+        ftpget_logger.error("Aborting,files may not be moved to server.")
+        client.chat_postMessage(channel="paycom-automation",
+                                text="There was a problem moving files to "
+                                + server_folder,
+                                username="Bot User")
+        exit()
 
 def main():
     expected_count = len(file_rename_matrix)
