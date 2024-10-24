@@ -160,6 +160,7 @@ def strip_date():
         exit()      
 
 def rename_files():
+    file_list = list(file_rename_matrix.values())
     try:
         for filename in os.listdir(local_folder):
             for prefix, new_name in file_rename_matrix.items():
@@ -172,6 +173,7 @@ def rename_files():
             new_filepath = os.path.join(local_folder, new_filename)
             os.rename(old_filepath, new_filepath)
             ftpget_logger.info(f"Renamed {filename} to {new_filename}")
+            file_list.remove(new_filename)
         ftpget_logger.info('Rename Function Complete')
 
     except Exception as e:
@@ -220,8 +222,48 @@ def main():
                         username="Bot User")
 
     strip_date()
-    rename_files()
+    if dl_count >= expected_count:
+        rename_files()
+    else:
+        missing_files = rename_files()
+
     move_files()
+    
+    if dl_count > expected_count:
+        message = "These extra files were not in my database:"
+        ftpget_logger.warning(message)
+        client.chat_postMessage(channel="paycom-automation",
+                        text=message,
+                        username="Bot User")
+        missed_files = os.listdir(local_folder)
+        for file in missed_files:
+            ftpget_logger.warning(file)
+            client.chat_postMessage(channel="paycom-automation",
+                            text=file,
+                            username="Bot User")
+        ftpget_logger.info("FtpGet Complete with exceptions\n\n")
+        client.chat_postMessage(channel="paycom-automation",
+                            text="Update complete with above exceptions",
+                            username="Bot User")
+        exit()
+        
+    elif dl_count < expected_count:
+        message = "These file(s) were not updated:"
+        ftpget_logger.warning(message)
+        client.chat_postMessage(channel="paycom-automation",
+                        text=message,
+                        username="Bot User")
+        for file in missing_files:
+            ftpget_logger.warning(file)
+            client.chat_postMessage(channel="paycom-automation",
+                                    text=file,
+                                    username="Bot User")
+        ftpget_logger.info("FtpGet Complete with exceptions\n\n")
+        client.chat_postMessage(channel="paycom-automation",
+                            text="Update complete with above exceptions",
+                            username="Bot User")
+        exit()
+
     ftpget_logger.info("FtpGet Complete \n\n")
     return
 
