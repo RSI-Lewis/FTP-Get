@@ -187,7 +187,8 @@ def rename_files():
 
 def move_files():
     try:
-        for filename in os.listdir(local_folder):
+        file_list = list(file_rename_matrix.values())
+        for filename in file_list:
             local_name = os.path.join(local_folder, filename)
             remote_name = os.path.join(server_folder, filename)
             shutil.move(local_name, remote_name)
