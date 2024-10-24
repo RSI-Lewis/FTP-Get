@@ -153,7 +153,12 @@ def strip_date():
 
     except Exception as e:
         ftpget_logger.error(f'An error occurred: {e}')
-        
+        ftpget_logger.error("Aborting")
+        client.chat_postMessage(channel="paycom-automation",
+                                text="Something went wrong renaming files. Aborted",
+                                username="Bot User")
+        exit()      
+
 def rename_files():
     try:
         for filename in os.listdir(local_folder):
@@ -171,6 +176,11 @@ def rename_files():
 
     except Exception as e:
         ftpget_logger.error(f"Error: {str(e)}")
+        ftpget_logger.error("Aborting")
+        client.chat_postMessage(channel="paycom-automation",
+                                text="Something went wrong renaming files. Aborted",
+                                username="Bot User")
+        exit()
 
 def move_files():
     try:
