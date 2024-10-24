@@ -203,6 +203,32 @@ def move_files():
                                 username="Bot User")
         exit()
 
+def move_extra_files():
+    #Function to move files left over after the rename and move to server but 
+    #were downloaded because they had the correct datastamp for todays download
+    #They are not yet defined in the File Rename matrix so we move them to a
+    #subdirectory in the server folder for inspection 
+    
+    unexpected_subfolder = sever_folder+"\\Unexpected-Reports"
+    try:
+        if not os.path.exists(unexpected_subfolder):
+            os.makedirs(unexpected_subfolder)
+        for filename in os.listdir(local_folder):
+            local_name = os.path.join(local_folder, filename)
+            remote_name = os.path.join(unexpected_subfolder, filename)
+            shutil.move(local_name, remote_name)
+            ftpget_logger.info(f"Moved {filename} to {unexpected_subfolder}")
+            client.chat_postMessage(channel="paycom-automation",
+                                text=f"Unexpected files moved to {unexpected_subfolder}",
+                                username="Bot User")
+    except Exception as e:
+        ftpget_logger.error(f"Error {str(e)}")
+        ftpget_logger.error("Aborting,unexpected files may not be moved to server.")
+        client.chat_postMessage(channel="paycom-automation",
+                                text="There was a problem moving unexpected files to "
+                                + unexpected_subfolder,
+                                username="Bot User")
+
 def main():
     expected_count = len(file_rename_matrix)
     dl_count = download_files(expected_count)
