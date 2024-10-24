@@ -209,7 +209,7 @@ def move_extra_files():
     #They are not yet defined in the File Rename matrix so we move them to a
     #subdirectory in the server folder for inspection 
     
-    unexpected_subfolder = sever_folder+"\\Unexpected-Reports"
+    unexpected_subfolder = server_folder+"\\Unexpected-Reports"
     try:
         if not os.path.exists(unexpected_subfolder):
             os.makedirs(unexpected_subfolder)
@@ -269,6 +269,7 @@ def main():
             client.chat_postMessage(channel="paycom-automation",
                             text=file,
                             username="Bot User")
+        move_extra_files()
         ftpget_logger.info("FtpGet Complete with exceptions\n\n")
         client.chat_postMessage(channel="paycom-automation",
                             text="Update complete with above exceptions",
