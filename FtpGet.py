@@ -231,33 +231,31 @@ def move_extra_files():
 
 def main():
     expected_count = len(file_rename_matrix)
-    dl_count = download_files(expected_count)
-    if dl_count == expected_count:
+    dl_dif = download_files(expected_count)
+    if dl_dif == 0:
         pass
-    elif dl_count > expected_count:
-        file_diff = dl_count-expected_count
-        message = f"There was {file_diff} more file(s) downloaded than expected"
+    elif dl_dif > 0:
+        message = f"There was {dl_dif} more file(s) downloaded than expected"
         ftpget_logger.info(message)
         client.chat_postMessage(channel="paycom-automation",
                         text=message,
                         username="Bot User")
-    elif dl_count < expected_count:
-        file_diff = expected_count-dl_count
-        message = f"{file_diff} file(s) of expected {expected_count} were missing"
+    elif dl_dif < 0:
+        message = f"{abs(dl_dif)} file(s) of expected {expected_count} were missing"
         ftpget_logger.info(message)
         client.chat_postMessage(channel="paycom-automation",
                         text=message,
                         username="Bot User")
 
     strip_date()
-    if dl_count >= expected_count:
+    if dl_dif >= 0:
         rename_files()
     else:
         missing_files = rename_files()
 
     move_files()
     
-    if dl_count > expected_count:
+    if dl_dif > 0:
         message = "These extra files were not in my database:"
         ftpget_logger.warning(message)
         client.chat_postMessage(channel="paycom-automation",
@@ -276,7 +274,7 @@ def main():
                             username="Bot User")
         exit()
         
-    elif dl_count < expected_count:
+    elif dl_dif < 0:
         message = "These file(s) were not updated:"
         ftpget_logger.warning(message)
         client.chat_postMessage(channel="paycom-automation",
