@@ -53,6 +53,7 @@ log_tab ="                                 "
 sftp_username = os.getenv('FtpUserName')
 sftp_password = os.getenv('FtpUserPass')
 sftp_server = os.getenv('FtpHost')
+
 remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
 if sftp_username == None or sftp_password == None or sftp_server == None:
@@ -131,6 +132,10 @@ def download_files():
         exit()
     except Exception as e:
         ftpget_logger.error(f'An error occurred: {e}')
+        client.chat_postMessage(channel="paycom-automation",
+                        text="Unknown Exception in download operation, aborted",
+                        username="Bot User")
+        exit()
 
 def strip_date():
     try:
