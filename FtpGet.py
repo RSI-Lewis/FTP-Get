@@ -175,7 +175,7 @@ def rename_files():
             ftpget_logger.info(f"Renamed {filename} to {new_filename}")
             file_list.remove(new_filename)
         ftpget_logger.info('Rename Function Complete')
-
+    
     except Exception as e:
         ftpget_logger.error(f"Error: {str(e)}")
         ftpget_logger.error("Aborting")
@@ -183,6 +183,7 @@ def rename_files():
                                 text="Something went wrong renaming files. Aborted",
                                 username="Bot User")
         exit()
+    return file_list
 
 def move_files():
     try:
