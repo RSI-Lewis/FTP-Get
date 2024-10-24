@@ -184,7 +184,25 @@ def move_files():
         ftpget_logger.error(f"Error {str(e)}")
 
 def main():
-    dl_count = download_files(len(file_rename_matrix))
+    expected_count = len(file_rename_matrix)
+    dl_count = download_files(expected_count)
+    if dl_count == expected_count:
+        pass
+    elif dl_count > expected_count:
+        file_diff = dl_count-expected_count
+        message = f"There was {file_diff} more file(s) downloaded than expected"
+        ftpget_logger.info(message)
+        client.chat_postMessage(channel="paycom-automation",
+                        text=message,
+                        username="Bot User")
+    elif dl_count < expected_count:
+        file_diff = expected_count-dl_count
+        message = f"{file_diff} file(s) of expected {expected_count} were missing"
+        ftpget_logger.info(message)
+        client.chat_postMessage(channel="paycom-automation",
+                        text=message,
+                        username="Bot User")
+
     strip_date()
     rename_files()
     move_files()
