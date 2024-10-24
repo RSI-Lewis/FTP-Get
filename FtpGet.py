@@ -104,7 +104,8 @@ file_rename_matrix = {
     "RSI_Job_Totals_Active": "RSI_Job_Totals_Active.xlsx"
     }
 
-def download_files():
+def download_files(expected_count):
+    dl_count = 0
     try:
         #Create an SSH Transport Client
         transport = paramiko.Transport((sftp_server, 22))
@@ -119,11 +120,11 @@ def download_files():
 
                 sftp.get(filename, local_file_path)
                 ftpget_logger.info(f'Downloaded: {filename}')
+                dl_count += 1
             
         ftpget_logger.info('Closing SFTP Connection')
         sftp.close()
         transport.close()
-
     except (SSHException, NoValidConnectionsError) as e:
         ftpget_logger.error(f"Connection Failed: {e}")
         client.chat_postMessage(channel="paycom-automation",
@@ -136,6 +137,7 @@ def download_files():
                         text="Unknown Exception in download operation, aborted",
                         username="Bot User")
         exit()
+    return dl_count-expected_count
 
 def strip_date():
     try:
@@ -182,7 +184,7 @@ def move_files():
         ftpget_logger.error(f"Error {str(e)}")
 
 def main():
-    download_files()
+    dl_count = download_files(len(file_rename_matrix))
     strip_date()
     rename_files()
     move_files()
