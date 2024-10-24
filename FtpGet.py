@@ -1,9 +1,11 @@
 import os
 import shutil
 import paramiko
+from paramiko.ssh_exception import SSHException, NoValidConnectionsError
 from datetime import datetime
 import logging
 from slack_sdk import WebClient
+
 
 #configuration of logging streams
 ftpget_logger = logging.getLogger('internal_logger')
@@ -121,6 +123,12 @@ def download_files():
         sftp.close()
         transport.close()
 
+    except (SSHException, NoValidConnectionsError) as e:
+        ftpget_logger.error(f"Connection Failed: {e}")
+        client.chat_postMessage(channel="paycom-automation",
+                        text="Could not connect to SFTP server, operation aborted",
+                        username="Bot User")
+        exit()
     except Exception as e:
         ftpget_logger.error(f'An error occurred: {e}')
 
