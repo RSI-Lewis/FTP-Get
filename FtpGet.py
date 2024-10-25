@@ -46,6 +46,13 @@ if slack_token == None:
 else:
     client = WebClient(token=slack_token)
 
+def post_to_slack(message, channel="paycom-automation", username="Bot User"):
+    if slack_token:
+        try:
+            client.chat_postMessage(channel=channel, text=message, username=username)
+        except Exception as e:
+            logger.warning(f"Failed to send message to Slack: {e}")
+
 #This string of spaces is for formatting log reports nicely
 log_tab ="                                 "
 
@@ -62,10 +69,8 @@ if sftp_username == None or sftp_password == None or sftp_server == None:
                 "variables to work.\n"+log_tab+" 1) FtpUserName\n"+log_tab+
                 " 2) FtpUserPass\n"+log_tab+" 3) FtpHost\n")
     ftpget_logger.warning("Terminating Script Early")
-    client.chat_postMessage(channel="paycom-automation",
-                        text="Automation failed to initialize. "+
-                        "SFTP Credentials missing from Environment",
-                        username="Bot User")
+    post_to_slack("Automation failed to initialize. "+
+                "SFTP Credentials missing from Environment")
     exit()
 
 #Set the folder to save files to when downloaded from FTP
@@ -87,10 +92,7 @@ else:
     ftpget_logger.error("Cannot connect to server folder:\n "+log_tab+server_folder+
                 "\n"+log_tab+" Please verify folder exists and this profile\n"
                 +log_tab+" has access")
-    client.chat_postMessage(channel="paycom-automation",
-                        text="Automation failed to initialize. "+
-                        "Cannot access Server Folder",
-                        username="Bot User")
+    post_to_slack("Automation failed to initialize. Cannot access Server Folder")
     exit()
 
 #Dictionary showing expected file name beginnings and what the file name 
@@ -127,25 +129,14 @@ def download_files(expected_count):
         transport.close()
     except (SSHException, NoValidConnectionsError) as e:
         ftpget_logger.error(f"Connection Failed: {e}")
-        client.chat_postMessage(channel="paycom-automation",
-                        text="Could not connect to SFTP server, operation aborted",
-                        username="Bot User")
+        post_to_slack("Could not connect to SFTP server, operation aborted")
         exit()
     except Exception as e:
         ftpget_logger.error(f'An error occurred: {e}')
-        client.chat_postMessage(channel="paycom-automation",
-                        text="Unknown Exception in download operation, aborted",
-                        username="Bot User")
+        post_to_slack("Unknown Exception in download operation, aborted")
         exit()
     return dl_count-expected_count
 
-def post_to_slack(message, channel="paycom-automation", username="Bot User""):
-    if slack_token:
-        try:
-            client.chat_postMessage(channel=channel, text=message, username=username)
-        except Exception as e:
-            logger.warning(f"Failed to send message to Slack: {e}")
-            
 def strip_date():
     try:
         os.chdir(local_folder)
@@ -161,9 +152,7 @@ def strip_date():
     except Exception as e:
         ftpget_logger.error(f'An error occurred: {e}')
         ftpget_logger.error("Aborting")
-        client.chat_postMessage(channel="paycom-automation",
-                                text="Something went wrong renaming files. Aborted",
-                                username="Bot User")
+        post_to_slack("Something went wrong renaming files. Aborted")
         exit()      
 
 def rename_files():
@@ -186,9 +175,7 @@ def rename_files():
     except Exception as e:
         ftpget_logger.error(f"Error: {str(e)}")
         ftpget_logger.error("Aborting")
-        client.chat_postMessage(channel="paycom-automation",
-                                text="Something went wrong renaming files. Aborted",
-                                username="Bot User")
+        post_to_slack("Something went wrong renaming files. Aborted")
         exit()
     return file_list
 
@@ -204,10 +191,8 @@ def move_files():
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
         ftpget_logger.error("Aborting,files may not be moved to server.")
-        client.chat_postMessage(channel="paycom-automation",
-                                text="There was a problem moving files to "
-                                + server_folder,
-                                username="Bot User")
+        post_to_slack("There was a problem moving files to " + server_folder)
+
         exit()
 
 def move_extra_files():
@@ -225,16 +210,11 @@ def move_extra_files():
             remote_name = os.path.join(unexpected_subfolder, filename)
             shutil.move(local_name, remote_name)
             ftpget_logger.info(f"Moved {filename} to {unexpected_subfolder}")
-            client.chat_postMessage(channel="paycom-automation",
-                                text=f"Unexpected files moved to {unexpected_subfolder}",
-                                username="Bot User")
+            post_to_slack(text=f"Unexpected files moved to {unexpected_subfolder}")
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
         ftpget_logger.error("Aborting,unexpected files may not be moved to server.")
-        client.chat_postMessage(channel="paycom-automation",
-                                text="There was a problem moving unexpected files to "
-                                + unexpected_subfolder,
-                                username="Bot User")
+        post_to_slack("There was a problem moving unexpected files to " + unexpected_subfolder)
 
 def main():
     expected_count = len(file_rename_matrix)
@@ -244,15 +224,11 @@ def main():
     elif dl_dif > 0:
         message = f"There was {dl_dif} more file(s) downloaded than expected"
         ftpget_logger.info(message)
-        client.chat_postMessage(channel="paycom-automation",
-                        text=message,
-                        username="Bot User")
+        post_to_slack(message)
     elif dl_dif < 0:
         message = f"{abs(dl_dif)} file(s) of expected {expected_count} were missing"
         ftpget_logger.info(message)
-        client.chat_postMessage(channel="paycom-automation",
-                        text=message,
-                        username="Bot User")
+        post_to_slack(message)
 
     strip_date()
     if dl_dif >= 0:
@@ -265,37 +241,25 @@ def main():
     if dl_dif > 0:
         message = "These extra files were not in my database:"
         ftpget_logger.warning(message)
-        client.chat_postMessage(channel="paycom-automation",
-                        text=message,
-                        username="Bot User")
+        post_to_slack(message)
         missed_files = os.listdir(local_folder)
         for file in missed_files:
             ftpget_logger.warning(file)
-            client.chat_postMessage(channel="paycom-automation",
-                            text=file,
-                            username="Bot User")
+            post_to_slack(file)
         move_extra_files()
         ftpget_logger.info("FtpGet Complete with exceptions\n\n")
-        client.chat_postMessage(channel="paycom-automation",
-                            text="Update complete with above exceptions",
-                            username="Bot User")
+        post_to_slack("Update complete with above exceptions")
         exit()
         
     elif dl_dif < 0:
         message = "These file(s) were not updated:"
         ftpget_logger.warning(message)
-        client.chat_postMessage(channel="paycom-automation",
-                        text=message,
-                        username="Bot User")
+        post_to_slack(message)
         for file in missing_files:
             ftpget_logger.warning(file)
-            client.chat_postMessage(channel="paycom-automation",
-                                    text=file,
-                                    username="Bot User")
+            post_to_slack(file)
         ftpget_logger.info("FtpGet Complete with exceptions\n\n")
-        client.chat_postMessage(channel="paycom-automation",
-                            text="Update complete with above exceptions",
-                            username="Bot User")
+        post_to_slack("Update complete with above exceptions")
         exit()
 
     ftpget_logger.info("FtpGet Complete \n\n")
