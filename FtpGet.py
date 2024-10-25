@@ -139,6 +139,13 @@ def download_files(expected_count):
         exit()
     return dl_count-expected_count
 
+def post_to_slack(message, channel="paycom-automation", username="Bot User""):
+    if slack_token:
+        try:
+            client.chat_postMessage(channel=channel, text=message, username=username)
+        except Exception as e:
+            logger.warning(f"Failed to send message to Slack: {e}")
+            
 def strip_date():
     try:
         os.chdir(local_folder)
