@@ -4,9 +4,20 @@ import paramiko
 from paramiko.ssh_exception import SSHException, NoValidConnectionsError
 from datetime import datetime
 import logging
+import textwrap
 from slack_sdk import WebClient
 from pathlib import Path
 
+class IndentedFormatter(logging.Formatter):
+    def format(self, record):
+        # Set the width for the message wrap, adjusting for
+        # the lenght of other log fields
+        width = 100
+        indent = " " * 31
+
+        original_msg = super().format(record)
+        wrapped_msg = textwrap.fill(original_msg, width=width, subsequent_indent=indent)
+        return wrapped_msg
 
 #configuration of logging streams
 ftpget_logger = logging.getLogger('internal_logger')
@@ -15,7 +26,7 @@ ftpget_logger.setLevel(logging.DEBUG)
 stream_handler = logging.StreamHandler()
 file_hanlder = logging.FileHandler('FtpGet.log')
 
-ftpget_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+ftpget_formatter = IndentedFormatter('%(asctime)s - %(levelname)s - %(message)s')
 stream_handler.setFormatter(ftpget_formatter)
 file_hanlder.setFormatter(ftpget_formatter)
 
@@ -27,9 +38,9 @@ ftpget_logger.info("FtpGet Started \n")
 #initiate SlackBot connection
 slack_token=os.getenv('slack_auth')
 if slack_token == None:
-    ftpget_logger.warning("***************************\n"+log_tab+
-                        " Slack Auth Token Missing\n"+log_tab+
-                        "Proceeding without Slackbot\n"+log_tab+
+    ftpget_logger.warning("***************************\n"+
+                        " Slack Auth Token Missing\n"+
+                        "Proceeding without Slackbot\n"+
                         "***************************\n")
 else:
     client = WebClient(token=slack_token)
@@ -42,9 +53,6 @@ def post_to_slack(message, channel="paycom-automation", username="Bot User"):
             logger.warning(f"Failed to send message to Slack: {e}")
     else:
         ftpget_logger.warning("Slack token is missing; message not sent.")
-
-#This string of spaces is for formatting log reports nicely
-log_tab ="                                 "
 
 def get_env_var(var_name, is_required=True):
     value = os.getenv(var_name)
@@ -76,11 +84,10 @@ except Exception as e:
 #Set the server folder to move the final files to
 server_folder = Path(r'\\server19\db\Paycom Reports\Test-Paycom Data')
 if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
-    ftpget_logger.info(f"Connected to server folder:\n"+log_tab+server_folder)
+    ftpget_logger.info(f"Connected to server folder: {server_folder}")
 else:
-    ftpget_logger.error("Cannot connect to server folder:\n "+log_tab+server_folder+
-                "\n"+log_tab+" Please verify folder exists and this profile\n"
-                +log_tab+" has access")
+    ftpget_logger.error(f"Cannot connect to server folder: {server_folder}"+
+                "Please verify folder exists and this profile has access")
     post_to_slack("Automation failed to initialize. Cannot access Server Folder")
     exit()
 unexpected_subfolder = server_folder / "Unexpected-Reports"
