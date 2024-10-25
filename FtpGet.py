@@ -21,19 +21,6 @@ file_hanlder.setFormatter(ftpget_formatter)
 ftpget_logger.addHandler(stream_handler)
 ftpget_logger.addHandler(file_hanlder)
 
-external_logger = logging.getLogger('external_module_logger')
-external_logger.setLevel(logging.ERROR)
-external_handler = logging.FileHandler('modules.log')
-
-external_handler.setFormatter(ftpget_formatter)
-external_logger.addHandler(external_handler)
-paramiko.logger = external_logger
-
-# Old Logger - Remove once new Logger is fully functional
-#logging.basicConfig(level=logging.DEBUG,
-#                    format="%(asctime)s - %(levelname)s - %(message)s",
-#                    handlers=[logging.StreamHandler(),
-#                    logging.FileHandler("FtpGet.log")])
 ftpget_logger.info("FtpGet Started \n")
 
 #initiate SlackBot connection
@@ -52,6 +39,8 @@ def post_to_slack(message, channel="paycom-automation", username="Bot User"):
             client.chat_postMessage(channel=channel, text=message, username=username)
         except Exception as e:
             logger.warning(f"Failed to send message to Slack: {e}")
+    else:
+        ftpget_logger.warning("Slack token is missing; message not sent.")
 
 #This string of spaces is for formatting log reports nicely
 log_tab ="                                 "
