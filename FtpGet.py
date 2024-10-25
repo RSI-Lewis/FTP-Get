@@ -5,6 +5,7 @@ from paramiko.ssh_exception import SSHException, NoValidConnectionsError
 from datetime import datetime
 import logging
 from slack_sdk import WebClient
+from pathlib import Path
 
 
 #configuration of logging streams
@@ -62,7 +63,7 @@ remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
  
 #Set the folder to save files to when downloaded from FTP
-local_folder = "c:\\FTP-Down"
+local_folder = Path(__file__).resolve().parent / "FTP-Down"
 try:
     if not os.path.exists(local_folder):
         os.makedirs(local_folder)
@@ -73,7 +74,7 @@ except Exception as e:
     ftpget_logger.error(f"Error: {str(e)}")
 
 #Set the server folder to move the final files to
-server_folder = "\\\\server19\\db\\Paycom Reports\\Test-Paycom Data"
+server_folder = Path(r'\\server19\db\Paycom Reports\Test-Paycom Data')
 if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
     ftpget_logger.info(f"Connected to server folder:\n"+log_tab+server_folder)
 else:
@@ -82,6 +83,7 @@ else:
                 +log_tab+" has access")
     post_to_slack("Automation failed to initialize. Cannot access Server Folder")
     exit()
+unexpected_subfolder = server_folder / "Unexpected-Reports"
 
 #Dictionary showing expected file name beginnings and what the file name 
 #should be change to before moving it to paycom data
@@ -189,7 +191,6 @@ def move_extra_files():
     #They are not yet defined in the File Rename matrix so we move them to a
     #subdirectory in the server folder for inspection 
     
-    unexpected_subfolder = server_folder+"\\Unexpected-Reports"
     try:
         if not os.path.exists(unexpected_subfolder):
             os.makedirs(unexpected_subfolder)
