@@ -45,23 +45,22 @@ def post_to_slack(message, channel="paycom-automation", username="Bot User"):
 #This string of spaces is for formatting log reports nicely
 log_tab ="                                 "
 
+def get_env_var(var_name, is_required=True):
+    value = os.getenv(var_name)
+    if is_required and value is None:
+        message = f"{var_name} is missing. Please set it in the environment variables"
+        ftpget_logger.error(message)
+        post_to_slack(message)
+    return value
+
 #Get FTP Server Details from System Variables
-sftp_username = os.getenv('FtpUserName')
-sftp_password = os.getenv('FtpUserPass')
-sftp_server = os.getenv('FtpHost')
+sftp_username = get_env_var('FtpUserName')
+sftp_password = get_env_var('FtpUserPass')
+sftp_server = get_env_var('FtpHost')
 
 remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
-if sftp_username == None or sftp_password == None or sftp_server == None:
-    ftpget_logger.error("Required Environmental Variables not found, \n"+log_tab
-                +"this script requires three environmental\n"+log_tab+
-                "variables to work.\n"+log_tab+" 1) FtpUserName\n"+log_tab+
-                " 2) FtpUserPass\n"+log_tab+" 3) FtpHost\n")
-    ftpget_logger.warning("Terminating Script Early")
-    post_to_slack("Automation failed to initialize. "+
-                "SFTP Credentials missing from Environment")
-    exit()
-
+ 
 #Set the folder to save files to when downloaded from FTP
 local_folder = "c:\\FTP-Down"
 try:
