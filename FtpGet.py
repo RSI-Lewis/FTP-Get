@@ -113,10 +113,7 @@ def download_files(expected_count):
                 sftp.get(filename, local_file_path)
                 ftpget_logger.info(f'Downloaded: {filename}')
                 dl_count += 1
-            
-        ftpget_logger.info('Closing SFTP Connection')
-        sftp.close()
-        transport.close()
+      
     except (SSHException, NoValidConnectionsError) as e:
         ftpget_logger.error(f"Connection Failed: {e}")
         post_to_slack("Could not connect to SFTP server, operation aborted")
@@ -125,6 +122,10 @@ def download_files(expected_count):
         ftpget_logger.error(f'An error occurred: {e}')
         post_to_slack("Unknown Exception in download operation, aborted")
         exit()
+    finally:
+        ftpget_logger.info('Closing SFTP Connection')
+        sftp.close()
+        transport.close()
     return dl_count-expected_count
 
 def strip_date():
