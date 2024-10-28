@@ -228,11 +228,7 @@ def main():
         post_to_slack(message)
 
     strip_date()
-    if dl_dif >= 0:
-        rename_files()
-    else:
-        missing_files = rename_files()
-
+    missing_files = rename_files()
     move_files()
     
     if dl_dif > 0:
