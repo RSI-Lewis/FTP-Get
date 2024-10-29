@@ -82,7 +82,7 @@ except Exception as e:
     ftpget_logger.error(f"Error: {str(e)}")
 
 #Set the server folder to move the final files to
-server_folder = Path(r'\\server19\db\Paycom Reports\Test-Paycom Data')
+server_folder = Path(r'\\server19\db\Paycom Reports\Paycom Data')
 if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
     ftpget_logger.info(f"Connected to server folder: {server_folder}")
 else:
