@@ -253,6 +253,7 @@ def main():
         post_to_slack("Update complete with above exceptions")
 
     ftpget_logger.info("FtpGet Complete \n\n")
+    post_to_slack(f"Paycom data updated, all {expected_count} files complete.")
     return
 
 if __name__ == "__main__":
