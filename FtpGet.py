@@ -45,7 +45,7 @@ if slack_token == None:
 else:
     client = WebClient(token=slack_token)
 
-def post_to_slack(message, channel="paycom-automation", username="Bot User"):
+def post_to_slack(message, channel="paycom-automation", username="Bot User") -> None:
     if slack_token:
         try:
             client.chat_postMessage(channel=channel, text=message, username=username)
@@ -54,7 +54,7 @@ def post_to_slack(message, channel="paycom-automation", username="Bot User"):
     else:
         ftpget_logger.warning("Slack token is missing; message not sent.")
 
-def get_env_var(var_name, is_required=True):
+def get_env_var(var_name, is_required=True) -> str:
     value = os.getenv(var_name)
     if is_required and value is None:
         message = f"{var_name} is missing. Please set it in the environment variables"
@@ -103,7 +103,7 @@ file_rename_matrix = {
     "RSI_Job_Totals_Active": "RSI_Job_Totals_Active.xlsx"
     }
 
-def download_files(expected_count):
+def download_files(expected_count) -> int:
     dl_count = 0
     try:
         #Create an SSH Transport Client
@@ -135,7 +135,7 @@ def download_files(expected_count):
         transport.close()
     return dl_count-expected_count
 
-def strip_date():
+def strip_date() -> None:
     try:
         os.chdir(local_folder)
         for filename in os.listdir(local_folder):
@@ -153,7 +153,7 @@ def strip_date():
         post_to_slack("Something went wrong renaming files. Aborted")
         exit()      
 
-def rename_files():
+def rename_files() -> list[str]:
     file_list = list(file_rename_matrix.values())
     try:
         for filename in os.listdir(local_folder):
@@ -177,7 +177,7 @@ def rename_files():
         exit()
     return file_list
 
-def move_files():
+def move_files() -> None:
     try:
         file_list = list(file_rename_matrix.values())
         for filename in file_list:
@@ -193,7 +193,7 @@ def move_files():
 
         exit()
 
-def move_extra_files():
+def move_extra_files() -> None:
     #Function to move files left over after the rename and move to server but 
     #were downloaded because they had the correct datastamp for todays download
     #They are not yet defined in the File Rename matrix so we move them to a
@@ -213,7 +213,7 @@ def move_extra_files():
         ftpget_logger.error("Aborting,unexpected files may not be moved to server.")
         post_to_slack("There was a problem moving unexpected files to " + unexpected_subfolder)
 
-def main():
+def main() -> None:
     expected_count = len(file_rename_matrix)
     dl_dif = download_files(expected_count)
     if dl_dif == 0:
