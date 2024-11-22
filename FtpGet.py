@@ -50,7 +50,7 @@ def post_to_slack(message, channel="paycom-automation", username="Bot User") -> 
         try:
             client.chat_postMessage(channel=channel, text=message, username=username)
         except Exception as e:
-            logger.warning(f"Failed to send message to Slack: {e}")
+            ftpget_logger.warning(f"Failed to send message to Slack: {e}")
     else:
         ftpget_logger.warning("Slack token is missing; message not sent.")
 
@@ -89,7 +89,7 @@ else:
     ftpget_logger.error(f"Cannot connect to server folder: {server_folder}"+
                 "Please verify folder exists and this profile has access")
     post_to_slack("Automation failed to initialize. Cannot access Server Folder")
-    sys.exit()
+    exit()
 unexpected_subfolder = server_folder / "Unexpected-Reports"
 
 #Dictionary showing expected file name beginnings and what the file name 
@@ -253,6 +253,7 @@ def main() -> None:
         post_to_slack("Update complete with above exceptions")
 
     ftpget_logger.info("FtpGet Complete \n\n")
+    post_to_slack(f"Paycom data updated, all {expected_count} files complete.")
     return
 
 if __name__ == "__main__":
