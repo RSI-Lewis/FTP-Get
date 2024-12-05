@@ -8,6 +8,7 @@ import textwrap
 from slack_sdk import WebClient
 from pathlib import Path
 
+
 class IndentedFormatter(logging.Formatter):
     def format(self, record):
         # Set the width for the message wrap, adjusting for
@@ -18,6 +19,7 @@ class IndentedFormatter(logging.Formatter):
         original_msg = super().format(record)
         wrapped_msg = textwrap.fill(original_msg, width=width, subsequent_indent=indent)
         return wrapped_msg
+
 
 #configuration of logging streams
 ftpget_logger = logging.getLogger('internal_logger')
@@ -45,6 +47,7 @@ if slack_token == None:
 else:
     client = WebClient(token=slack_token)
 
+
 def post_to_slack(message, channel="paycom-automation", username="Bot User") -> None:
     if slack_token:
         try:
@@ -54,6 +57,7 @@ def post_to_slack(message, channel="paycom-automation", username="Bot User") -> 
     else:
         ftpget_logger.warning("Slack token is missing; message not sent.")
 
+
 def get_env_var(var_name, is_required=True) -> str:
     value = os.getenv(var_name)
     if is_required and value is None:
@@ -61,6 +65,7 @@ def get_env_var(var_name, is_required=True) -> str:
         ftpget_logger.error(message)
         post_to_slack(message)
     return value
+
 
 #Get FTP Server Details from System Variables
 sftp_username = get_env_var('FtpUserName')
@@ -92,6 +97,7 @@ else:
     exit()
 unexpected_subfolder = server_folder / "Unexpected-Reports"
 
+
 #Dictionary showing expected file name beginnings and what the file name 
 #should be change to before moving it to paycom data
 file_rename_matrix = {
@@ -102,6 +108,7 @@ file_rename_matrix = {
     "RSI Allocations Report v2": "RSI Allocations Report.xlsx",
     "RSI_Job_Totals_Active": "RSI_Job_Totals_Active.xlsx"
     }
+
 
 def download_files(expected_count) -> int:
     dl_count = 0
@@ -135,6 +142,7 @@ def download_files(expected_count) -> int:
         transport.close()
     return dl_count-expected_count
 
+
 def strip_date() -> None:
     try:
         os.chdir(local_folder)
@@ -152,6 +160,7 @@ def strip_date() -> None:
         ftpget_logger.error("Aborting")
         post_to_slack("Something went wrong renaming files. Aborted")
         exit()      
+
 
 def rename_files() -> list[str]:
     file_list = list(file_rename_matrix.values())
@@ -177,6 +186,7 @@ def rename_files() -> list[str]:
         exit()
     return file_list
 
+
 def move_files() -> None:
     try:
         file_list = list(file_rename_matrix.values())
@@ -192,6 +202,7 @@ def move_files() -> None:
         post_to_slack("There was a problem moving files to " + server_folder)
 
         exit()
+
 
 def move_extra_files() -> None:
     #Function to move files left over after the rename and move to server but 
@@ -212,6 +223,7 @@ def move_extra_files() -> None:
         ftpget_logger.error(f"Error {str(e)}")
         ftpget_logger.error("Aborting,unexpected files may not be moved to server.")
         post_to_slack("There was a problem moving unexpected files to " + unexpected_subfolder)
+
 
 def main() -> None:
     expected_count = len(file_rename_matrix)
@@ -255,6 +267,7 @@ def main() -> None:
     ftpget_logger.info("FtpGet Complete \n\n")
     post_to_slack(f"Paycom data updated, all {expected_count} files complete.")
     return
+
 
 if __name__ == "__main__":
     main()
