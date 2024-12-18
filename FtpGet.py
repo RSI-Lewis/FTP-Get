@@ -211,7 +211,7 @@ def move_files() -> None:
         ftpget_logger.error(f"Error {str(e)}")
         ftpget_logger.error("Aborting,files may not be moved to server.")
         post_to_slack("There was a problem moving files to " + server_folder)
-
+    #TODO find out why this exception does not make a post to the slack
         exit()
 
 
