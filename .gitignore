@@ -6,6 +6,7 @@ lib/
 lib64/
 Scripts/
 var/
+FTP-Down/
 
 known_hosts
 pyvenv.cfg
@@ -18,3 +19,4 @@ FtpGet.log
 modules.log
 
 test.py
+
