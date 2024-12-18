@@ -46,6 +46,17 @@ else:
     client = WebClient(token=slack_token)
 
 def post_to_slack(message, channel="paycom-automation", username="Bot User"):
+    """
+    Function to post a mesasge to SlackBot
+    
+    Required parameter:
+        message (str): Contains the message to be posted.
+    
+    Optional parameters
+        channel (str): channel to post into defautls to paycom-automation
+        username (str): username to post from, defaults to "Bot User"
+    
+    """
     if slack_token:
         try:
             client.chat_postMessage(channel=channel, text=message, username=username)
