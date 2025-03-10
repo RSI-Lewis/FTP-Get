@@ -210,7 +210,7 @@ def move_files() -> None:
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
         ftpget_logger.error("Aborting,files may not be moved to server.")
-        post_to_slack("There was a problem moving files to " + server_folder)
+        post_to_slack(f"There was a problem moving files to {server_folder}")
     #TODO find out why this exception does not make a post to the slack
         exit()
 
@@ -233,7 +233,7 @@ def move_extra_files() -> None:
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
         ftpget_logger.error("Aborting,unexpected files may not be moved to server.")
-        post_to_slack("There was a problem moving unexpected files to " + unexpected_subfolder)
+        post_to_slack(f"There was a problem moving unexpected files to {unexpected_subfolder}")
 
 
 def main() -> None:
