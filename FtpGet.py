@@ -7,6 +7,7 @@ import logging
 import textwrap
 from slack_sdk import WebClient
 from pathlib import Path
+import time
 
 
 class IndentedFormatter(logging.Formatter):
@@ -199,6 +200,7 @@ def rename_files() -> list[str]:
 
 
 def move_files() -> None:
+    time.sleep(1)
     try:
         file_list = list(file_rename_matrix.values())
         for filename in file_list:
