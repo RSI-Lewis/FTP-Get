@@ -115,7 +115,7 @@ unexpected_subfolder = server_folder / "Unexpected-Reports"
 file_rename_matrix = {
     "Luci Allocations Report": "Luci Allocations Report.xlsx",
     "Project_OH Time by Employee_Department_Location_LUCI": "Luci Hours 2025.xlsx",
-    "Project_OH Time by Employee_Department_Location": "2025 Labor Hours.xlsx",
+    "Project_OH Time by Employee_Department_Location": "Current Labor Hours.xlsx",
     "Punch Record": "Punches Current Quarter.xlsx",
     "RSI Allocations Report v2": "RSI Allocations Report.xlsx",
     "RSI_Job_Totals_Active": "RSI_Job_Totals_Active.xlsx"
