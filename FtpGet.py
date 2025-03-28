@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import paramiko
 from paramiko.ssh_exception import SSHException, NoValidConnectionsError
@@ -269,6 +270,7 @@ def main() -> None:
         move_extra_files()
         ftpget_logger.info("FtpGet Complete with exceptions\n\n")
         post_to_slack("Update complete with above exceptions")
+        sys.exit()
     elif dl_dif < 0:
         message = "These file(s) were not updated:"
         ftpget_logger.warning(message)
@@ -278,6 +280,7 @@ def main() -> None:
             post_to_slack(file)
         ftpget_logger.info("FtpGet Complete with exceptions\n\n")
         post_to_slack("Update complete with above exceptions")
+        sys.exit
 
     ftpget_logger.info("FtpGet Complete \n\n")
     post_to_slack(f"Paycom data updated, all {expected_count} files complete.")
