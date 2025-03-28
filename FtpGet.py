@@ -199,10 +199,12 @@ def rename_files() -> list[str]:
     return file_list
 
 
-def move_files() -> None:
+def move_files(missing_files) -> list:
     time.sleep(1)
     try:
         file_list = list(file_rename_matrix.values())
+        for filename in missing_files:
+            file_list.remove(filename)
         for filename in file_list:
             local_name = os.path.join(local_folder, filename)
             remote_name = os.path.join(server_folder, filename)
@@ -254,7 +256,7 @@ def main() -> None:
 
     strip_date()
     missing_files = rename_files()
-    move_files()
+    move_files(missing_files)
     
     if dl_dif > 0:
         message = "These extra files were not in my database:"
