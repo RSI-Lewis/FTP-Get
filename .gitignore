@@ -18,5 +18,5 @@ pip-delete-this-directory.txt
 FtpGet.log
 modules.log
 
-test.py
+test*.py
 
