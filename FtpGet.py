@@ -234,7 +234,7 @@ def move_extra_files() -> None:
             remote_name = os.path.join(unexpected_subfolder, filename)
             shutil.move(local_name, remote_name)
             ftpget_logger.info(f"Moved {filename} to {unexpected_subfolder}")
-            post_to_slack(text=f"Unexpected files moved to {unexpected_subfolder}")
+            post_to_slack(f"Unexpected files moved to {unexpected_subfolder}")
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
         ftpget_logger.error("Aborting,unexpected files may not be moved to server.")
