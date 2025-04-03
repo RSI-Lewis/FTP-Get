@@ -268,15 +268,16 @@ def main() -> None:
             ftpget_logger.warning(file)
             post_to_slack(file)
         move_extra_files()
-        ftpget_logger.info("FtpGet Complete with exceptions\n\n")
-        post_to_slack("Update complete with above exceptions")
-    elif dl_dif < 0:
+        
+    if len(missing_files) > 0:
         message = "These file(s) were not updated:"
         ftpget_logger.warning(message)
         post_to_slack(message)
         for file in missing_files:
             ftpget_logger.warning(file)
             post_to_slack(file)
+
+    if dl_dif > 0 or len(missing_files) > 0:
         ftpget_logger.info("FtpGet Complete with exceptions\n\n")
         post_to_slack("Update complete with above exceptions")
     else:
