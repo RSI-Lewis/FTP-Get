@@ -128,10 +128,6 @@ file_rename_matrix = {
         'newname':"Current Labor Hours.xlsx",
         'folder':"Paycom Data"
     },
-    "Punch Record":{
-        'newname':"Punches Current Quarter.xlsx",
-        'folder':"Paycom Data"
-    },
     "RSI Allocations Report v2":{
         'newname':"RSI Allocations Report.xlsx",
         'folder':"Paycom Data"
