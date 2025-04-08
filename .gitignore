@@ -19,4 +19,5 @@ FtpGet.log
 modules.log
 
 test*.py
+Test-FTP-Get.bat
 
