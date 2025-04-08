@@ -8,7 +8,6 @@ import logging
 import textwrap
 from slack_sdk import WebClient
 from pathlib import Path
-import time
 
 
 class IndentedFormatter(logging.Formatter):
@@ -111,16 +110,49 @@ else:
 unexpected_subfolder = server_folder / "Unexpected-Reports"
 
 
-#Dictionary showing expected file name beginnings and what the file name 
-#should be change to before moving it to paycom data
+#Dictionary where each primary key is a string giving the expected file name
+#prefix, each primary entry contains two secondary keys 'newname' contains 
+#the full filename it should be renamed to, and 'folder' gives us a path
+#to where the file should be moved to within the path initialized in 
+#server_folder
 file_rename_matrix = {
-    "Luci Allocations Report": "Luci Allocations Report.xlsx",
-    "Project_OH Time by Employee_Department_Location_LUCI": "Luci Hours 2025.xlsx",
-    "Project_OH Time by Employee_Department_Location": "Current Labor Hours.xlsx",
-    "Punch Record": "Punches Current Quarter.xlsx",
-    "RSI Allocations Report v2": "RSI Allocations Report.xlsx",
-    "RSI_Job_Totals_Active": "RSI_Job_Totals_Active.xlsx"
+    "Luci Allocations Report":{
+        'newname':"Luci Allocations Report.xlsx",
+        'folder':"Paycom Data"
+    },
+    "Project_OH Time by Employee_Department_Location_LUCI":{
+        'newname':"Luci Hours 2025.xlsx",
+        'folder':"Paycom Data"
+    },
+    "Project_OH Time by Employee_Department_Location":{
+        'newname':"Current Labor Hours.xlsx",
+        'folder':"Paycom Data"
+    },
+    "Punch Record":{
+        'newname':"Punches Current Quarter.xlsx",
+        'folder':"Paycom Data"
+    },
+    "RSI Allocations Report v2":{
+        'newname':"RSI Allocations Report.xlsx",
+        'folder':"Paycom Data"
+    },
+    "RSI_Job_Totals_Active":{
+        'newname':"RSI_Job_Totals_Active.xlsx",
+        'folder':"Paycom Data"
+    },
+    "Data_RSI_Labor Allocation Summary":{
+        'newname':"THSA_RSI_YTD.csv",
+        'folder':r"Ravenswood Studio\Dashboard\Data\THSA"
+    },
+    "Data_RSI_Punch Record":{
+        'newname':"PR_RSI_QTD.csv",
+        'folder':r"Ravenswood Studio\Dashboard\Data\PR"
+    },
+    "Data_RSI_Time Detail Report":{
+        'newname':"TDR_RSI_YTD.csv",
+        'folder':r"Ravenswood Studio\Dashboard\Data\TDR"
     }
+}
 
 
 def download_files(expected_count) -> int:
@@ -176,12 +208,12 @@ def strip_date() -> None:
 
 
 def rename_files() -> list[str]:
-    file_list = list(file_rename_matrix.values())
+    file_list = [file['newname'] for file in file_rename_matrix.values()]
     try:
         for filename in os.listdir(local_folder):
-            for prefix, new_name in file_rename_matrix.items():
+            for prefix in file_rename_matrix.keys():
                 if filename.startswith(prefix):
-                    new_filename = new_name
+                    new_filename = file_rename_matrix[prefix]["newname"]
                     break
             else:
                 continue
@@ -201,16 +233,15 @@ def rename_files() -> list[str]:
 
 
 def move_files(missing_files) -> list:
-    time.sleep(1)
     try:
-        file_list = list(file_rename_matrix.values())
+        move_matrix = {details["newname"]: details["folder"] for details in file_rename_matrix.values()}
         for filename in missing_files:
-            file_list.remove(filename)
-        for filename in file_list:
+            del move_matrix[filename]
+        for filename, folder in move_matrix.items():
             local_name = os.path.join(local_folder, filename)
-            remote_name = os.path.join(server_folder, filename)
+            remote_name = os.path.join(server_folder, folder, filename)
             shutil.move(local_name, remote_name)
-            ftpget_logger.info(f"Moved {filename} to {server_folder}")
+            ftpget_logger.info(f"Moved {filename} to {server_folder}\\{folder}")
 
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
