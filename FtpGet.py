@@ -236,6 +236,7 @@ def move_files(missing_files) -> list:
         for filename, folder in move_matrix.items():
             local_name = os.path.join(local_folder, filename)
             remote_name = os.path.join(server_folder, folder, filename)
+            print(remote_name)
             shutil.move(local_name, remote_name)
             ftpget_logger.info(f"Moved {filename} to {server_folder}\\{folder}")
 
