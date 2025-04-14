@@ -94,12 +94,17 @@ try:
         os.makedirs(local_folder)
         ftpget_logger.info(f"Created target folder {local_folder}")
     else:
+        for file_name in os.listdir(local_folder):
+            file_path = os.path.join(local_folder, file_name)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                ftpget_logger.info(f"Deleted: {file_path} from target folder")
         ftpget_logger.info(f"Setting target folder to {local_folder}")
 except Exception as e:
     ftpget_logger.error(f"Error: {str(e)}")
 
 #Set the server folder to move the final files to
-server_folder = Path(r'\\server19\db\Paycom Reports\Paycom Data')
+server_folder = Path(r'\\server19\db\Paycom Reports')
 if os.path.exists(server_folder) and os.access(server_folder, os.W_OK):
     ftpget_logger.info(f"Connected to server folder: {server_folder}")
 else:
