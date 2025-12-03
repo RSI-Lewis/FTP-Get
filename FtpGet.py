@@ -121,19 +121,19 @@ unexpected_subfolder = server_folder / "Unexpected-Reports"
 #to where the file should be moved to within the path initialized in 
 #server_folder
 file_rename_matrix = {
-    "Luci Allocations Report":{
+    "Luci_Allocations_Report":{
         'newname':"Luci Allocations Report.xlsx",
         'folder':"Paycom Data"
     },
-    "Project_OH Time by Employee_Department_Location_LUCI":{
+    "Project_OH_Time_by_Employee_Department_Location_LUCI":{
         'newname':"Luci Hours 2025.xlsx",
         'folder':"Paycom Data"
     },
-    "Project_OH Time by Employee_Department_Location":{
+    "Project_OH_Time_by_Employee_Department_Location":{
         'newname':"Current Labor Hours.xlsx",
         'folder':"Paycom Data"
     },
-    "RSI Allocations Report v2":{
+    "RSI_Allocations_Report_v2":{
         'newname':"RSI Allocations Report.xlsx",
         'folder':"Paycom Data"
     },
@@ -239,11 +239,17 @@ def move_files(missing_files) -> list:
         for filename in missing_files:
             del move_matrix[filename]
         for filename, folder in move_matrix.items():
-            local_name = os.path.join(local_folder, filename)
-            remote_name = os.path.join(server_folder, folder, filename)
-            print(remote_name)
-            shutil.move(local_name, remote_name)
-            ftpget_logger.info(f"Moved {filename} to {server_folder}\\{folder}")
+            try:
+                local_name = os.path.join(local_folder, filename)
+                remote_name = os.path.join(server_folder, folder, filename)
+#                print(remote_name)
+                shutil.move(local_name, remote_name)
+                ftpget_logger.info(f"Moved {filename} to {server_folder}\\{folder}")
+
+            except Exception as e:
+                ftpget_logger.error(f"Error {str(e)}")
+                ftpget_logger.error(f"Could not move {filename}")
+                post_to_slack(f"There was a probelm moving {filename} to {server_folder}\\{folder}")
 
     except Exception as e:
         ftpget_logger.error(f"Error {str(e)}")
