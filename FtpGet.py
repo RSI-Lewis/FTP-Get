@@ -121,19 +121,19 @@ unexpected_subfolder = server_folder / "Unexpected-Reports"
 #to where the file should be moved to within the path initialized in 
 #server_folder
 file_rename_matrix = {
-    "Luci_Allocations_Report":{
+    "Luci Allocations Report":{
         'newname':"Luci Allocations Report.xlsx",
         'folder':"Paycom Data"
     },
-    "Project_OH_Time_by_Employee_Department_Location_LUCI":{
+    "Project_OH Time by Employee_Department_Location_LUCI":{
         'newname':"Luci Hours 2025.xlsx",
         'folder':"Paycom Data"
     },
-    "Project_OH_Time_by_Employee_Department_Location":{
+    "Project_OH Time by Employee_Department_Location_RSI":{
         'newname':"Current Labor Hours.xlsx",
         'folder':"Paycom Data"
     },
-    "RSI_Allocations_Report_v2":{
+    "RSI Allocations Report v2":{
         'newname':"RSI Allocations Report.xlsx",
         'folder':"Paycom Data"
     },
