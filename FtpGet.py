@@ -101,27 +101,25 @@ def send_email(subject: str, body: str) -> None:
         ftpget_logger.warning(f"Failed to send email: {e}")
 
 
-def get_env_var(var_name, is_required=True) -> str | None:
+def get_env_var(var_name: str, is_required: bool = True) -> str:
     value = os.getenv(var_name)
-    if is_required and value is None:
-        message = f"{var_name} is missing. Please set it in the environment variables"
-        ftpget_logger.error(message)
-        send_email(
-            subject="FtpGet - Missing Environment Variable",
-            body=message
-        )
+    if value is None:
+        if is_required:
+            message = f"{var_name} is missing. Please set it in the environment variables"
+            ftpget_logger.error(message)
+            send_email(
+                subject="FtpGet - Missing Environment Variable",
+                body=message
+            )
+            exit()
+        return ""
     return value
 
 
 #Get FTP Server Details from System Variables
 sftp_username = get_env_var('FtpUserName')
-assert sftp_username is not None, "Environment variable FtpUsername is missing"
 sftp_password = get_env_var('FtpUserPass')
-assert sftp_password is not None, "Environment variable FtpUserPass is missing"
 sftp_server = get_env_var('FtpHost')
-if sftp_server is None:
-    raise ValueError("Environment variable FtpHost is missing")
-
 
 remote_folder = 'Outbound'
 today_date = datetime.now().strftime('%Y%m%d')
@@ -201,12 +199,16 @@ file_rename_matrix = {
 
 def download_files(expected_count) -> int:
     dl_count = 0
+    transport: paramiko.Transport | None = None
+    sftp: paramiko.SFTPClient | None = None
     try:
         #Create an SSH Transport Client
         transport = paramiko.Transport((sftp_server, 22))
         transport.connect(username=sftp_username, password=sftp_password)
         #Create the FTP session
         sftp = paramiko.SFTPClient.from_transport(transport)
+        if sftp is None:
+            raise SSHException("Failed to create SFTP session from transport")
         ftpget_logger.info(f"Opened SFTP Connection: {sftp_server}")
         sftp.chdir(remote_folder)
         for filename in sftp.listdir():
@@ -232,8 +234,10 @@ def download_files(expected_count) -> int:
         exit()
     finally:
         ftpget_logger.info('Closing SFTP Connection')
-        sftp.close()
-        transport.close()
+        if sftp is not None:
+            sftp.close()
+        if transport is not None:
+            transport.close()
     return dl_count - expected_count
 
 
@@ -287,7 +291,7 @@ def rename_files() -> list[str]:
     return file_list
 
 
-def move_files(missing_files) -> list:
+def move_files(missing_files) -> None:
     try:
         move_matrix = {details["newname"]: details["folder"] for details in file_rename_matrix.values()}
         for filename in missing_files:
