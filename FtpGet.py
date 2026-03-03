@@ -193,6 +193,10 @@ file_rename_matrix = {
     "Data_RSI_Time Detail Report":{
         'newname':"TDR_RSI_YTD.csv",
         'folder':r"Ravenswood Studio\Dashboard\Data\TDR"
+    },
+    "RSI_Time_Detail_Report_Trailing2wks":{
+        'newname' : "RSI_Time_Detail_Report_Trailing2wks.csv",
+        'folder' : "Paycom Data"
     }
 }
 
