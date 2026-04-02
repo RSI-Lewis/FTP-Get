@@ -1,0 +1,38 @@
+{
+    "Luci Allocations Report": {
+        "newname": "Luci Allocations Report.xlsx",
+        "folder": "Paycom Data"
+    },
+    "Project_OH Time by Employee_Department_Location_LUCI": {
+        "newname": "Luci Hours 2025.xlsx",
+        "folder": "Paycom Data"
+    },
+    "Project_OH Time by Employee_Department_Location_RSI": {
+        "newname": "Current Labor Hours.xlsx",
+        "folder": "Paycom Data"
+    },
+    "RSI Allocations Report v2": {
+        "newname": "RSI Allocations Report.xlsx",
+        "folder": "Paycom Data"
+    },
+    "RSI_Job_Totals_Active": {
+        "newname": "RSI_Job_Totals_Active.xlsx",
+        "folder": "Paycom Data"
+    },
+    "Data_RSI_Labor Allocation Summary": {
+        "newname": "THSA_RSI_YTD.csv",
+        "folder": "Ravenswood Studio\\Dashboard\\Data\\THSA"
+    },
+    "Data_RSI_Punch Record": {
+        "newname": "PR_RSI_QTD.csv",
+        "folder": "Ravenswood Studio\\Dashboard\\Data\\PR"
+    },
+    "Data_RSI_Time Detail Report": {
+        "newname": "TDR_RSI_YTD.csv",
+        "folder": "Ravenswood Studio\\Dashboard\\Data\\TDR"
+    },
+    "RSI_Time_Detail_Report_Trailing2wks": {
+        "newname": "RSI_Time_Detail_Report_Trailing2wks.csv",
+        "folder": "Paycom Data"
+    }
+}
