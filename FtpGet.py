@@ -156,49 +156,31 @@ else:
 unexpected_subfolder = server_folder / "Unexpected-Reports"
 
 
-#Dictionary where each primary key is a string giving the expected file name
-#prefix, each primary entry contains two secondary keys 'newname' contains 
-#the full filename it should be renamed to, and 'folder' gives us a path
-#to where the file should be moved to within the path initialized in 
-#server_folder
-file_rename_matrix = {
-    "Luci Allocations Report":{
-        'newname':"Luci Allocations Report.xlsx",
-        'folder':"Paycom Data"
-    },
-    "Project_OH Time by Employee_Department_Location_LUCI":{
-        'newname':"Luci Hours 2025.xlsx",
-        'folder':"Paycom Data"
-    },
-    "Project_OH Time by Employee_Department_Location_RSI":{
-        'newname':"Current Labor Hours.xlsx",
-        'folder':"Paycom Data"
-    },
-    "RSI Allocations Report v2":{
-        'newname':"RSI Allocations Report.xlsx",
-        'folder':"Paycom Data"
-    },
-    "RSI_Job_Totals_Active":{
-        'newname':"RSI_Job_Totals_Active.xlsx",
-        'folder':"Paycom Data"
-    },
-    "Data_RSI_Labor Allocation Summary":{
-        'newname':"THSA_RSI_YTD.csv",
-        'folder':r"Ravenswood Studio\Dashboard\Data\THSA"
-    },
-    "Data_RSI_Punch Record":{
-        'newname':"PR_RSI_QTD.csv",
-        'folder':r"Ravenswood Studio\Dashboard\Data\PR"
-    },
-    "Data_RSI_Time Detail Report":{
-        'newname':"TDR_RSI_YTD.csv",
-        'folder':r"Ravenswood Studio\Dashboard\Data\TDR"
-    },
-    "RSI_Time_Detail_Report_Trailing2wks":{
-        'newname' : "RSI_Time_Detail_Report_Trailing2wks.csv",
-        'folder' : "Paycom Data"
-    }
-}
+# Load the file rename matrix from rename_matrix.json in the same directory as
+# this script. Each key is a filename prefix (after date stripping); each value
+# contains 'newname' (the final filename) and 'folder' (destination subfolder
+# relative to server_folder). To reuse this script for another feed, simply
+# swap in a different rename_matrix.json alongside the script.
+_matrix_path = Path(__file__).resolve().parent / "rename_matrix.json"
+try:
+    with open(_matrix_path, 'r') as f:
+        file_rename_matrix: dict = json.load(f)
+    ftpget_logger.info(f"Loaded rename matrix from {_matrix_path} "
+                       f"({len(file_rename_matrix)} entries)")
+except FileNotFoundError:
+    ftpget_logger.error(f"rename_matrix.json not found at {_matrix_path}. Cannot continue.")
+    send_email(
+        subject="FtpGet - Missing rename_matrix.json",
+        body=f"rename_matrix.json was not found at {_matrix_path}. Process aborted."
+    )
+    exit()
+except Exception as e:
+    ftpget_logger.error(f"Failed to load rename_matrix.json: {e}. Cannot continue.")
+    send_email(
+        subject="FtpGet - Invalid rename_matrix.json",
+        body=f"rename_matrix.json could not be parsed. Process aborted.\n\nError: {e}"
+    )
+    exit()
 
 
 def download_files(expected_count) -> int:
