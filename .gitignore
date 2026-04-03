@@ -21,3 +21,4 @@ modules.log
 
 test*.py
 Test-FTP-Get.bat
+StartFTP.bat
