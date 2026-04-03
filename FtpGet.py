@@ -279,22 +279,22 @@ def rename_files() -> list[str]:
 
 def move_files(missing_files) -> None:
     try:
-        move_matrix = {details["newname"]: details["folder"] for details in file_rename_matrix.values()}
-        for filename in missing_files:
-            del move_matrix[filename]
-        for filename, folder in move_matrix.items():
+        for details in file_rename_matrix.values():
+            filename = details["newname"]
+            if filename in missing_files:
+                continue
+            folder = Path(details["folder"])
+            dest_folder = folder if folder.is_absolute() else server_folder / folder
             try:
-                local_name = os.path.join(local_folder, filename)
-                remote_name = os.path.join(server_folder, folder, filename)
-                shutil.move(local_name, remote_name)
-                ftpget_logger.info(f"Moved {filename} to {server_folder}\\{folder}")
+                shutil.move(os.path.join(local_folder, filename), dest_folder / filename)
+                ftpget_logger.info(f"Moved {filename} to {dest_folder}")
 
             except Exception as e:
                 ftpget_logger.error(f"Error {str(e)}")
                 ftpget_logger.error(f"Could not move {filename}")
                 send_email(
                     subject=f"FtpGet - File Move Error: {filename}",
-                    body=f"There was a problem moving {filename} to {server_folder}\\{folder}.\n\nError: {e}"
+                    body=f"There was a problem moving {filename} to {dest_folder}.\n\nError: {e}"
                 )
 
     except Exception as e:
@@ -302,7 +302,7 @@ def move_files(missing_files) -> None:
         ftpget_logger.error("Aborting, files may not be moved to server.")
         send_email(
             subject="FtpGet - Critical File Move Error",
-            body=f"There was a problem moving files to {server_folder}. Process aborted.\n\nError: {e}"
+            body=f"There was a problem moving files. Process aborted.\n\nError: {e}"
         )
         exit()
 

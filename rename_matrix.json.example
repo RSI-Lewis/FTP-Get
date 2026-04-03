@@ -33,6 +33,6 @@
     },
     "RSI_Time_Detail_Report_Trailing2wks": {
         "newname": "RSI_Time_Detail_Report_Trailing2wks.csv",
-        "folder": "Paycom Data"
+        "folder": "C:\\internal.RunnIntegration"
     }
 }
